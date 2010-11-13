@@ -88,8 +88,8 @@ static void depth_process(uint8_t *buf, size_t len)
 		depth_frame[i] = ((word >> (13-bitshift)) & 0x7ff);
 		bitshift = (bitshift + 11) % 8;
 	}
-
-	depth_cb(depth_frame, 640, 480);
+	if(depth_cb)
+		depth_cb(depth_frame, 640, 480);
 }
 
 static void rgb_process(uint8_t *buf, size_t len)
@@ -164,7 +164,8 @@ static void rgb_process(uint8_t *buf, size_t len)
 			}
 		}
 	}
-	rgb_cb(rgb_frame, 640, 480);
+	if(rgb_cb)
+		rgb_cb(rgb_frame, 640, 480);
 }
 
 //NOTE - There is something off about this approach
@@ -283,16 +284,16 @@ void start_camera_device(){
 	uint8_t ibuf[0x2000];
 	struct cam_hdr *chdr = (void*)obuf;
 	struct cam_hdr *rhdr = (void*)ibuf;
-
+	int ret;
+    int i, j;
 	printf("INIT CAMERA\n");
 
-    int ret = usb_control_msg(cameraHandle, 0x80, 0x06, 0x3ee, 0, ibuf, 0x12, 160);
+    ret = usb_control_msg(cameraHandle, 0x80, 0x06, 0x3ee, 0, ibuf, 0x12, 160);
     printf("First xfer: %d\n", ret);
 
     chdr->magic[0] = 0x47;
     chdr->magic[1] = 0x4d;
 
-    int i, j;
     for (i=0; i<num_inits; i++) {
         const struct caminit *ip = &inits[i];
         chdr->cmd = ip->command;

@@ -5,13 +5,17 @@
 #include <pthread.h>
 #include <time.h>
 
-#if defined(__WIN32__)
+#if defined(WIN32)
 #include <windows.h>
 #include <usb.h>
 #else
 #include <libusb.h>
 #include <unistd.h>
 #endif
+
+
+#include <math.h>
+#ifdef PTHREAD_AND_GLUT
 
 #if defined(__APPLE__)
 #include <GLUT/glut.h>
@@ -27,11 +31,6 @@
 #include <GL/glu.h>
 #endif
 
-#include <math.h>
-
-#define PTHREAD_AND_GLUT
-
-#ifdef PTHREAD_AND_GLUT
 pthread_t gl_thread;
 volatile int die = 0;
 

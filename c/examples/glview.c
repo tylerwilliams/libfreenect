@@ -3,17 +3,17 @@
 #include <string.h>
 #include <usb.h>
 #include <stdint.h>
-
 #include "libfreenect.h"
-
-
 #include <pthread.h>
+#include <time.h>
 
-//#include <glut.h>
+#include <glut.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <math.h>
 #include <Windows.h>
+
+#define PTHREAD_AND_GLUT
 
 #ifdef PTHREAD_AND_GLUT
 pthread_t gl_thread;
@@ -127,11 +127,13 @@ void *gl_threadfunc(void *arg)
 
 	glutInit(&g_argc, g_argv);
 
-	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH);
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_ALPHA );
 	glutInitWindowSize(1280, 480);
 	glutInitWindowPosition(0, 0);
 
 	window = glutCreateWindow("LibFreenect");
+
+	printf("window created!\n");
 
 	glutDisplayFunc(&DrawGLScene);
 	glutIdleFunc(&DrawGLScene);
@@ -140,7 +142,11 @@ void *gl_threadfunc(void *arg)
 
 	InitGL(1280, 480);
 
+    printf("nope\n");
+
 	glutMainLoop();
+
+    printf("here!\n");
 
 	pthread_exit(NULL);
 	return NULL;
@@ -221,43 +227,35 @@ void rgbimg(uint8_t *buf, int width, int height)
 int main(int argc, char **argv)
 {
 	int res;
+	die = 0;
 
-	if(InitMotorDevice() != FREENECT_OK)
+    g_argc = argc;
+    g_argv = argv;
+
+	if(InitCameraDevice() != FREENECT_OK)
 	{
-			printf("Error, couldn't open the motor device.\n");
-			return -1;
+        printf("Error, couldn't open the camera device.\n");
+        return -1;
 	}
 
-	// NOTE : the return of those functions won't be OK but it will actually work - have to check why the underlying libusb functions fail although they do the job
-	if(SetLED(Green) != FREENECT_OK)
-	{
-		printf("Error, couldn't write the LED status.\n");
-	}
-
-	if(SetMotorTilt(128) != FREENECT_OK)
-	{
-		printf("Error, couldn't write the motor status.\n");
-	}
+    res = pthread_create(&gl_thread, NULL, gl_threadfunc, NULL);
+    if (res) {
+        printf("pthread_create failed\n");
+        return 1;
+    }
 
 	Sleep(3000);
 
-	if(SetMotorTilt(255) != FREENECT_OK)
-	{
-		printf("Error, couldn't write the motor status.\n");
-	}
+	startUpCameraDevice();
+	prepIsoTransfers(depthimg, rgbimg);
 
-	Sleep(3000);
+    while( die == 0 ){
+        update_isochronous_async();
+    }
 
-	if(SetMotorTilt(0) != FREENECT_OK)
-	{
-		printf("Error, couldn't write the motor status.\n");
-	}
+    printf("-- done!\n");
 
-	if(CloseMotorDevice() != FREENECT_OK)
-	{
-		printf("Error, couldn't close the motor device.\n");
-		return -1;
-	}
+    pthread_exit(NULL);
 
 	return 0;
 }

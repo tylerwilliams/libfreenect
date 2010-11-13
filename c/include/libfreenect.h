@@ -6,7 +6,7 @@
 typedef void (*depthcb)(uint16_t *buf, int width, int height);
 typedef void (*rgbcb)(uint8_t *buf, int width, int height);
 
-enum LIBFREENECT_RETURN_CODE { FREENECT_ERROR_DEVICE_NOT_FOUND, FREENECT_ERROR_DEVICE_OPEN_FAILED, FREENECT_OK, 
+enum LIBFREENECT_RETURN_CODE { FREENECT_ERROR_DEVICE_NOT_FOUND, FREENECT_ERROR_DEVICE_OPEN_FAILED, FREENECT_OK,
 	FREENECT_DEVICE_ALREADY_OPEN, FREENECT_DEVICE_NOT_OPEN, FREENECT_ERROR_DEVICE_CLOSE_FAILED, FREENECT_ERROR_TRANSFER};
 
 enum KinectLEDStatus
@@ -22,6 +22,12 @@ enum KinectLEDStatus
     };
 
 
+enum LIBFREENECT_RETURN_CODE InitCameraDevice();
+
+void startUpCameraDevice();
+void update_isochronous_async();
+void prepIsoTransfers(depthcb dcb, rgbcb rcb);
+
 enum LIBFREENECT_RETURN_CODE InitMotorDevice();
 enum LIBFREENECT_RETURN_CODE CloseMotorDevice();
 
@@ -29,3 +35,4 @@ enum LIBFREENECT_RETURN_CODE SetLED(enum KinectLEDStatus status);
 enum LIBFREENECT_RETURN_CODE SetMotorTilt(byte tiltValue);
 
 #endif
+

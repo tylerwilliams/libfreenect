@@ -118,7 +118,8 @@ static void depth_process(uint8_t *buf, size_t len)
 		bitshift = (bitshift + 11) % 8;
 	}
 
-	depth_cb(depth_frame, 640, 480);
+	if(depth_cb)
+		depth_cb(depth_frame, 640, 480);
 }
 
 static void rgb_process(uint8_t *buf, size_t len)
@@ -187,8 +188,8 @@ static void rgb_process(uint8_t *buf, size_t len)
 			}
 		}
 	}
-
-	rgb_cb(rgb_frame, 640, 480);
+	if(rgb_cb)
+		rgb_cb(rgb_frame, 640, 480);
 }
 
 /*static void rgb_process(uint8_t *buf, size_t len)

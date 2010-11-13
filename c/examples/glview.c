@@ -13,8 +13,11 @@
 #include <unistd.h>
 #endif
 
-
 #include <math.h>
+
+// COMMENT THIS LINE OUT FOR SIMPLE NON-PTHREAD/GLUT TRANSFER TEST
+#define PTHREAD_AND_GLUT
+
 #ifdef PTHREAD_AND_GLUT
 
 #if defined(__APPLE__)
@@ -262,8 +265,6 @@ int main(int argc, char **argv)
 	
 #if defined(WIN32)
 	Sleep(3000);
-#else
-	sleep(3);
 #endif
 
 

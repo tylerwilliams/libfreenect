@@ -1,33 +1,21 @@
-/*  libfreenect - an open source Kinect driver
-
-Copyright (C) 2010  Hector Martin "marcan" <hector@marcansoft.com>
-
-This code is licensed to you under the terms of the GNU GPL, version 2 or version 3;
-see:
- http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
- http://www.gnu.org/licenses/gpl-3.0.txt
-*/
-
 
 #include <stdio.h>
 #include <string.h>
-#include <libusb.h>
+#include <usb.h>
+#include <stdint.h>
+
 #include "libfreenect.h"
+
 
 #include <pthread.h>
 
-#if defined(__APPLE__)
-#include <GLUT/glut.h>
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#else
-#include <GL/glut.h>
+//#include <glut.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
-#endif
-
 #include <math.h>
+#include <Windows.h>
 
+#ifdef PTHREAD_AND_GLUT
 pthread_t gl_thread;
 volatile int die = 0;
 
@@ -227,48 +215,49 @@ void rgbimg(uint8_t *buf, int width, int height)
 	pthread_mutex_unlock(&gl_backbuf_mutex);
 }
 
+#endif
+
 
 int main(int argc, char **argv)
 {
 	int res;
-	libusb_device_handle *dev;
-	printf("Kinect camera test\n");
 
-	int i;
-	for (i=0; i<2048; i++) {
-		float v = i/2048.0;
-		v = powf(v, 3)* 6;
-		t_gamma[i] = v*6*256;
+	if(InitMotorDevice() != FREENECT_OK)
+	{
+			printf("Error, couldn't open the motor device.\n");
+			return -1;
 	}
-	
-	g_argc = argc;
-	g_argv = argv;
 
-	libusb_init(NULL);
-	//libusb_set_debug(0, 3);
+	// NOTE : the return of those functions won't be OK but it will actually work - have to check why the underlying libusb functions fail although they do the job
+	if(SetLED(Green) != FREENECT_OK)
+	{
+		printf("Error, couldn't write the LED status.\n");
+	}
 
-	dev = libusb_open_device_with_vid_pid(NULL, 0x45e, 0x2ae);
-	if (!dev) {
-		printf("Could not open device\n");
-		return 1;
+	if(SetMotorTilt(128) != FREENECT_OK)
+	{
+		printf("Error, couldn't write the motor status.\n");
 	}
-	res = pthread_create(&gl_thread, NULL, gl_threadfunc, NULL);
-	if (res) {
-		printf("pthread_create failed\n");
-		return 1;
+
+	Sleep(3000);
+
+	if(SetMotorTilt(255) != FREENECT_OK)
+	{
+		printf("Error, couldn't write the motor status.\n");
 	}
-	
-	libusb_claim_interface(dev, 0);
-		
-	//gl_threadfunc(&none);
-	
-	printf("device is %i\n", libusb_get_device_address(libusb_get_device(dev)));
-	
-	cams_init(dev, depthimg, rgbimg);
-	
-	while(!die && libusb_handle_events(NULL) == 0 );
-	
-	printf("-- done!\n");
-	
-	pthread_exit(NULL);
+
+	Sleep(3000);
+
+	if(SetMotorTilt(0) != FREENECT_OK)
+	{
+		printf("Error, couldn't write the motor status.\n");
+	}
+
+	if(CloseMotorDevice() != FREENECT_OK)
+	{
+		printf("Error, couldn't close the motor device.\n");
+		return -1;
+	}
+
+	return 0;
 }

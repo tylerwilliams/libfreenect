@@ -243,7 +243,7 @@ struct cam_hdr {
 	uint16_t tag;
 };
 
-void send_init(void)
+void start_camera_device(void)
 {
 	int i, j, ret;
 	uint8_t obuf[0x2000];
@@ -299,10 +299,9 @@ void send_init(void)
 	}
 }
 
-void cams_init(libusb_device_handle *d, depthcb dcb, rgbcb rcb)
+void prep_iso_transfers(depthcb dcb, rgbcb rcb)
 {
 	int i, ret;
-	dev = d;
 
 	depth_cb = dcb;
 	rgb_cb = rcb;
@@ -328,8 +327,21 @@ void cams_init(libusb_device_handle *d, depthcb dcb, rgbcb rcb)
 		if (ret)
 			printf("Failed to submit Depth xfer %d: %d\n", i, ret);
 	}
-
-	send_init();
-
 }
 
+enum LIBFREENECT_RETURN_CODE init_camera_device(){
+	libusb_init(NULL);
+	//libusb_set_debug(0, 3);
+
+	dev = libusb_open_device_with_vid_pid(NULL, 0x45e, 0x2ae);
+	if (dev == NULL) {
+		printf("Could not open device\n");
+		return FREENECT_ERROR_DEVICE_NOT_FOUND;
+	}
+	libusb_claim_interface(dev, 0);
+	return FREENECT_OK;
+}
+
+void update_isochronous_async(){
+	libusb_handle_events(NULL);
+}

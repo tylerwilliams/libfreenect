@@ -1,17 +1,33 @@
-
 #include <stdio.h>
 #include <string.h>
-#include <usb.h>
 #include <stdint.h>
 #include "libfreenect.h"
 #include <pthread.h>
 #include <time.h>
 
+#if defined(__WIN32__)
+#include <windows.h>
+#include <usb.h>
+#else
+#include <libusb.h>
+#include <unistd.h>
+#endif
+
+#if defined(__APPLE__)
+#include <GLUT/glut.h>
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#else
+#if defined(WIN32)
 #include <glut.h>
+#else
+#include <GL/glut.h>
+#endif
 #include <GL/gl.h>
 #include <GL/glu.h>
+#endif
+
 #include <math.h>
-#include <Windows.h>
 
 #define PTHREAD_AND_GLUT
 
@@ -142,8 +158,6 @@ void *gl_threadfunc(void *arg)
 
 	InitGL(1280, 480);
 
-    printf("nope\n");
-
 	glutMainLoop();
 
     printf("here!\n");
@@ -227,35 +241,49 @@ void rgbimg(uint8_t *buf, int width, int height)
 int main(int argc, char **argv)
 {
 	int res;
-	die = 0;
+	int die = 0;
 
-    g_argc = argc;
-    g_argv = argv;
 
-	if(InitCameraDevice() != FREENECT_OK)
+	if(init_camera_device() != FREENECT_OK)
 	{
         printf("Error, couldn't open the camera device.\n");
         return -1;
 	}
+
+#if defined(PTHREAD_AND_GLUT)
+    g_argc = argc;
+    g_argv = argv;
 
     res = pthread_create(&gl_thread, NULL, gl_threadfunc, NULL);
     if (res) {
         printf("pthread_create failed\n");
         return 1;
     }
-
+#endif
+	
+#if defined(WIN32)
 	Sleep(3000);
+#else
+	sleep(3);
+#endif
 
-	startUpCameraDevice();
-	prepIsoTransfers(depthimg, rgbimg);
 
+	start_camera_device();
+#if defined(PTHREAD_AND_GLUT)
+	prep_iso_transfers(depthimg, rgbimg);
+#else
+	prep_iso_transfers(NULL, NULL);
+#endif
+	
     while( die == 0 ){
         update_isochronous_async();
     }
 
     printf("-- done!\n");
 
+#if defined(PTHREAD_AND_GLUT)	
     pthread_exit(NULL);
+#endif
 
 	return 0;
 }

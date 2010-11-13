@@ -1,11 +1,19 @@
 include_directories (${CMAKE_SOURCE_DIR}/include)
+IF(WIN32)
+include_directories (${CMAKE_SOURCE_DIR}/include/win32)
+ENDIF()
 include_directories (${CMAKE_SOURCE_DIR}/lib)
 
 find_package(Threads REQUIRED)
 find_package(USB REQUIRED)
 include_directories(${USB_INCLUDE_DIRS})
 
-add_library (freenect cameras.c ${CMAKE_CURRENT_BINARY_DIR}/inits.c)
+IF(WIN32)
+  add_library (freenect cameras-win32.c ${CMAKE_CURRENT_BINARY_DIR}/inits.c)
+ELSE()
+  add_library (freenect cameras-libusb1.c ${CMAKE_CURRENT_BINARY_DIR}/inits.c)
+ENDIF()
+
 find_library (PTHREAD pthread)
 target_link_libraries (freenect ${CMAKE_THREAD_LIBS_INIT} ${USB_LIBRARIES})
 

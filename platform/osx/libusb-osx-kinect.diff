@@ -42,7 +42,7 @@
 -  frame += 2;
 +  //printf("scheduling for frame += 2\n");
 +  //theo modded += 2 was too short 
-+  frame += 64;
++  frame += 8;
  
    /* submit the request */
    if (is_read)

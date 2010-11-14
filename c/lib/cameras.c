@@ -58,14 +58,14 @@ extern const int num_inits;
 
 static void depth_process(uint8_t *buf, size_t len)
 {
-    if (len == 0)
-    return;
-
 	int i;
 	struct frame_hdr *hdr = (void*)buf;
 	uint8_t *data = buf + sizeof(*hdr);
 	int datalen = len - sizeof(*hdr);
 	int bitshift = 0;
+
+	if (len == 0)
+		return;
 
 	//printf("%02x %x\n", hdr->flag, depth_pos);
 	switch (hdr->flag) {
@@ -675,6 +675,7 @@ static void bayer2BGR_8u_C1C3R(    const unsigned char* bayer0,
 {
     int blue = code == CV_BayerBG2BGR || code == CV_BayerGB2BGR ? -1 : 1;
     int start_with_green = code == CV_BayerGB2BGR || code == CV_BayerGR2BGR;
+	int bayer_step2;
 
     memset( dst0, 0, img_width*3*sizeof(dst0[0]) );
     memset( dst0 + (img_height - 1)*dst_step, 0, img_width*3*sizeof(dst0[0]) );
@@ -682,7 +683,7 @@ static void bayer2BGR_8u_C1C3R(    const unsigned char* bayer0,
     img_height -= 2;
     img_width -= 2;
 
-    int bayer_step2 = bayer_step*2; // small optimization.
+    bayer_step2 = bayer_step*2; // small optimization.
 
     for( ; img_height-- > 0; bayer0 += bayer_step, dst0 += dst_step )
     {

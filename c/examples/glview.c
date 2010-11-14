@@ -242,7 +242,7 @@ int main(int argc, char **argv)
 	int die = 0;
 	char c;
 
-	for (i=0; i<2048; i++) {	t_gamma[i] = powf(i/2048.0,3)*6*256;	}
+	for (i=0; i<2048; i++) {	t_gamma[i] = powf(i/2048.0,3)*6*6*256;	}
 
 	if(init_camera_device() != FREENECT_OK)
 	{

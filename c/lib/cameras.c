@@ -72,7 +72,7 @@ static void depth_process(uint8_t *buf, size_t len)
 			depth_pos = 0;
 		case 0x72:
 		case 0x75:
-			memcpy(&depth_buf[depth_pos], data, datalen);
+			memcpy(&depth_buf[depth_pos], data, 1920-sizeof(struct frame_hdr));
 			depth_pos += datalen;
 		break;
 	}
@@ -384,7 +384,7 @@ void setup_isochronous_async(usb_dev_handle *dev){
 		depth_bufs[k] = malloc(XFER_SIZE);
 
 		usb_isochronous_setup_async(cameraHandle, &rgb_contexts[k], 0x81, PKT_SIZE);
-		usb_isochronous_setup_async(cameraHandle, &depth_contexts[k], 0x82, PKT_SIZE);
+		usb_isochronous_setup_async(cameraHandle, &depth_contexts[k], 0x82, 1760);
 	}
 
 	for( k = 0; k < NUM_XFERS; k++ ){
@@ -393,7 +393,7 @@ void setup_isochronous_async(usb_dev_handle *dev){
 		{
 			printf("error: %s\n", usb_strerror());
 		}
-		ret = usb_submit_async(depth_contexts[k], (char*)depth_bufs[k], XFER_SIZE);
+		ret = usb_submit_async(depth_contexts[k], (char*)depth_bufs[k], PKTS_PER_XFER*1760);
 		if( ret < 0 )
 		{
 			printf("error: %s\n", usb_strerror());
@@ -422,12 +422,12 @@ void update_isochronous_async(){
     }else if(read > 0){
         //send them to our rgb_callback - note the cb is modified as we don't have the same amount of packet info as libusb
         printf("depth_callback!\n");
-        depth_callback(depth_bufs[count], PKT_SIZE);
+        depth_callback(depth_bufs[count], 1760);
     }
 
 
-	ZeroMemory(depth_bufs[count], XFER_SIZE);
-    ret = usb_submit_async(depth_contexts[count], (char*)depth_bufs[count], XFER_SIZE);
+	ZeroMemory(depth_bufs[count], PKTS_PER_XFER*1760);
+    ret = usb_submit_async(depth_contexts[count], (char*)depth_bufs[count], PKTS_PER_XFER*1760);
     if( ret < 0 ){
         printf("error: %s\n", usb_strerror());
         usb_cancel_async(depth_contexts[count]);

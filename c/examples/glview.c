@@ -145,7 +145,7 @@ void *gl_threadfunc(void *arg)
 
 	glutInit(&g_argc, g_argv);
 
-		glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_ALPHA );
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_ALPHA );
 	glutInitWindowSize(1280, 480);
 	glutInitWindowPosition(0, 0);
 
@@ -162,7 +162,7 @@ void *gl_threadfunc(void *arg)
 
 	glutMainLoop();
 
-		printf("here!\n");
+    printf("here!\n");
 
 	pthread_exit(NULL);
 	return NULL;
@@ -183,37 +183,37 @@ void depthimg(uint16_t *buf, int width, int height)
 				gl_depth_back[3*i+0] = 255;
 				gl_depth_back[3*i+1] = 255-lb;
 				gl_depth_back[3*i+2] = 255-lb;
-			break;
+				break;
 			case 1:
 				gl_depth_back[3*i+0] = 255;
 				gl_depth_back[3*i+1] = lb;
 				gl_depth_back[3*i+2] = 0;
-			break;
+				break;
 			case 2:
 				gl_depth_back[3*i+0] = 255-lb;
 				gl_depth_back[3*i+1] = 255;
 				gl_depth_back[3*i+2] = 0;
-			break;
+				break;
 			case 3:
 				gl_depth_back[3*i+0] = 0;
 				gl_depth_back[3*i+1] = 255;
 				gl_depth_back[3*i+2] = lb;
-			break;
+				break;
 			case 4:
 				gl_depth_back[3*i+0] = 0;
 				gl_depth_back[3*i+1] = 255-lb;
 				gl_depth_back[3*i+2] = 255;
-			break;
+				break;
 			case 5:
 				gl_depth_back[3*i+0] = 0;
 				gl_depth_back[3*i+1] = 0;
 				gl_depth_back[3*i+2] = 255-lb;
-			break;
+				break;
 			default:
 				gl_depth_back[3*i+0] = 0;
 				gl_depth_back[3*i+1] = 0;
 				gl_depth_back[3*i+2] = 0;
-			break;
+				break;
 		}
 	}
 	got_frames++;
@@ -246,42 +246,41 @@ int main(int argc, char **argv)
 
 	if(init_camera_device() != FREENECT_OK)
 	{
-			printf("Error, couldn't open the camera device.\n");
-			return -1;
+        printf("Error, couldn't open the camera device.\n");
+        return -1;
 	}
 
 	#if defined(PTHREAD_AND_GLUT)
 		g_argc = argc;
 		g_argv = argv;
 
-		res = pthread_create(&gl_thread, NULL, gl_threadfunc, NULL);
-		if (res) {
-			printf("pthread_create failed\n");
-			return 1;
-		}
+        res = pthread_create(&gl_thread, NULL, gl_threadfunc, NULL);
+        if (res) {
+            printf("pthread_create failed\n");
+            return 1;
+        }
 	#endif
+
 	#if defined(WIN32)
-	Sleep(3000);
+        Sleep(3000);
 	#endif
 
 
 	start_camera_device();
 	#if defined(PTHREAD_AND_GLUT)
-	prep_iso_transfers(depthimg, rgbimg);
+        prep_iso_transfers(depthimg, rgbimg);
 	#else
-	prep_iso_transfers(NULL, NULL);
+        prep_iso_transfers(NULL, NULL);
 	#endif
 
-		while( die == 0 ){
+    while( die == 0 ){
+        update_isochronous_async();
+    }
 
-			//scanf("%c", &c);
-			update_isochronous_async();
-		}
-
-		printf("-- done!\n");
+    printf("-- done!\n");
 
 	#if defined(PTHREAD_AND_GLUT)
-		pthread_exit(NULL);
+        pthread_exit(NULL);
 	#endif
 
 	return 0;

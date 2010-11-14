@@ -24,7 +24,7 @@ see:
    higher. */
 #define DEPTH_LEN 2048
 #define RGB_LEN 2048
-#define PKTS_PER_XFER 512
+#define PKTS_PER_XFER 768
 #define NUM_XFERS 64
 #else
 #define DEPTH_LEN 1760
@@ -101,11 +101,16 @@ static void depth_process(uint8_t *buf, size_t len)
 	   which makes things render glitchy. This needs to be debugged,
 	   but for the moment this patch fixes it.
 	*/
-	if (depth_pos != 422400)
+	if (depth_pos < 422400)
 	{
-		printf("DROPPED DEPTH FRAME %d bytes\n", depth_pos);
 		return;
 	}
+	if (depth_pos > 422400)
+	{
+		printf("WEIRD DEPTH FRAME %d bytes\n", depth_pos);
+		return;
+	}
+
 #endif
 	
 	printf("GOT DEPTH FRAME, %d bytes\n", depth_pos);
@@ -152,9 +157,13 @@ static void rgb_process(uint8_t *buf, size_t len)
 	   which makes things render glitchy. This needs to be debugged,
 	   but for the moment this patch fixes it.
 	*/
-	if (rgb_pos != 307200)
+	if (rgb_pos < 307200)
 	{
-		printf("DROPPED RGB FRAME %d bytes\n", depth_pos);
+		return;
+	}
+	if (rgb_pos > 307200)
+	{
+		printf("WEIRD RGB FRAME %d bytes\n", rgb_pos);
 		return;
 	}
 #endif

@@ -5,7 +5,7 @@
 #include <pthread.h>
 #include <time.h>
 
-#if defined(WIN32)
+#if defined(_WIN32)
 #include <windows.h>
 #include <usb.h>
 #else
@@ -27,7 +27,7 @@ volatile int die = 0;
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #else
-#if defined(WIN32)
+#if defined(_WIN32)
 #include <GL/glut.h>
 #else
 #include <glut.h>
@@ -265,7 +265,7 @@ int main(int argc, char **argv)
     }
 #endif
 	
-#if defined(WIN32)
+#if defined(_WIN32)
 	Sleep(3000);
 #endif
 

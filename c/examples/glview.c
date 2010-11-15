@@ -27,11 +27,7 @@ volatile int die = 0;
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #else
-#if defined(_WIN32)
 #include <GL/glut.h>
-#else
-#include <glut.h>
-#endif
 #include <GL/gl.h>
 #include <GL/glu.h>
 #endif

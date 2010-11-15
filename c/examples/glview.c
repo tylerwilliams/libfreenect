@@ -28,7 +28,7 @@
 #if defined(WIN32)
 #include <glut.h>
 #else
-#include <GL/glut.h>
+#include <glut.h>
 #endif
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -153,6 +153,8 @@ void *gl_threadfunc(void *arg)
 
 	printf("window created!\n");
 
+	printf("window created!\n");
+
 	glutDisplayFunc(&DrawGLScene);
 	glutIdleFunc(&DrawGLScene);
 	glutReshapeFunc(&ReSizeGLScene);
@@ -164,6 +166,8 @@ void *gl_threadfunc(void *arg)
 
     printf("here!\n");
 
+    printf("here!\n");
+
 	pthread_exit(NULL);
 	return NULL;
 }
@@ -172,10 +176,6 @@ uint16_t t_gamma[2048];
 
 void depthimg(uint16_t *buf, int width, int height)
 {
-/*	FILE *f = fopen("depth.bin", "w");
-	fwrite(depth_frame, 640*480, 2, f);
-	fclose(f);*/
-
 	int i;
 
 	pthread_mutex_lock(&gl_backbuf_mutex);
@@ -245,6 +245,7 @@ int main(int argc, char **argv)
 	int res;
 	int die = 0;
 
+	for (i=0; i<2048; i++) {	t_gamma[i] = powf(i/2048.0,3)*6*6*256;	}
 
 	if(init_camera_device() != FREENECT_OK)
 	{

@@ -42,4 +42,3 @@ enum LIBFREENECT_RETURN_CODE set_led(enum KinectLEDStatus status);
 enum LIBFREENECT_RETURN_CODE set_motor_tilt(uint8_t tiltValue);
 
 #endif
-

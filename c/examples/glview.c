@@ -18,6 +18,8 @@
 // COMMENT THIS LINE OUT FOR SIMPLE NON-PTHREAD/GLUT TRANSFER TEST
 #define PTHREAD_AND_GLUT
 
+volatile int die = 0;
+
 #ifdef PTHREAD_AND_GLUT
 
 #if defined(__APPLE__)
@@ -26,7 +28,7 @@
 #include <OpenGL/glu.h>
 #else
 #if defined(WIN32)
-#include <glut.h>
+#include <GL/glut.h>
 #else
 #include <glut.h>
 #endif
@@ -35,7 +37,6 @@
 #endif
 
 pthread_t gl_thread;
-volatile int die = 0;
 
 int g_argc;
 char **g_argv;
@@ -244,7 +245,6 @@ int main(int argc, char **argv)
 {
 	int res;
 	int i;
-	for (i=0; i<2048; i++) {	t_gamma[i] = powf(i/2048.0,3)*6*6*256;	}
 
 	if(init_camera_device() != FREENECT_OK)
 	{
@@ -253,7 +253,9 @@ int main(int argc, char **argv)
 	}
 
 #if defined(PTHREAD_AND_GLUT)
-    g_argc = argc;
+	for (i=0; i<2048; i++) {	t_gamma[i] = powf(i/2048.0,3)*6*6*256;	}
+
+	g_argc = argc;
     g_argv = argv;
 
     res = pthread_create(&gl_thread, NULL, gl_threadfunc, NULL);

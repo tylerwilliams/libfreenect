@@ -243,8 +243,7 @@ void rgbimg(uint8_t *buf, int width, int height)
 int main(int argc, char **argv)
 {
 	int res;
-	int die = 0;
-
+	int i;
 	for (i=0; i<2048; i++) {	t_gamma[i] = powf(i/2048.0,3)*6*6*256;	}
 
 	if(init_camera_device() != FREENECT_OK)

@@ -18,6 +18,12 @@ to like, totally not even be funny. You are so amazingly on your own
 right now, but feel free to hit the #openkinect IRC channel on
 Freenode for questions.
 
+What you'll get when compiling this branch:
+
+- the libfreenect library, not the it does a whole lot right now.
+- an executable called glview. glview will render depth data next to
+  rgb data in a glut window.
+
 ==== Building with CMake
 
 To use CMake:
@@ -32,16 +38,26 @@ To use CMake:
 
 ==== Linux
 
-Should "just work" if you have libusb installed. Since there's no udev
-rules yet, you'll need to run as root. Deal with it.
+Should "just work" if you have the following packages installed:
+
+- libusb-1.0-dev
+- freeglut3-dev (or whatever freeglut dev package your distro has)
+
+Since there's no udev rules yet, you'll need to run glview as
+root. Deal with it.
 
 ==== OS X
 
+NOTE: AS OF 2010-11-16, WE HAVE UPDATED THIS PATCH. IF YOU HAVE
+ALREADY PATCHED, PLEASE REPATCH AND REINSTALL LIBUSB TO GET OS X
+WORKING AT FULL 30FPS.
+
+>>>>>>> master
 You will need to pull the libusb-1.0 repo head and patch using the
 files in platform/osx/. Just go to the root directory of the cloned
 libusb-1.0 repo and run
 
-patch -p0 < [path_to_OpenKinectRepo]/platform/osx/libusb-osx-kinect.diff
+patch -p1 < [path_to_OpenKinectRepo]/platform/osx/libusb-osx-kinect.diff
 
 Recompile libusb and put it wherever CMake will look (/usr/local/lib,
 /usr/lib, etc...). If you're using a package manager like fink,
@@ -59,7 +75,8 @@ transfers work.
 
 === And everyone else...
 
-Below is the readmes of the other repos I'm organizing this from. This currently consists of:
+Below is the readmes of the other repos I'm organizing this from. This
+currently consists of:
 
 - Marcan's original libfreenect repo (in the c directory here) -
   GPL'd.

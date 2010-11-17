@@ -54,7 +54,7 @@ nobase_libfreenect_include_HEADERS = libfreenect.h \
 ## configuration header file is generated at configure time and should not be
 ## shipped with the source tarball.
 libfreenect_libincludedir = $(libdir)/libfreenect-$(LIBFREENECT_API_VERSION)/include
-nodist_libfreenect_libinclude_HEADERS = exampleconfig.h
+# nodist_libfreenect_libinclude_HEADERS = exampleconfig.h
 
 ## Install the generated pkg-config file (.pc) into the expected location for
 ## architecture-dependent package configuration information.  Occasionally,

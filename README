@@ -1,0 +1,48 @@
+==== Building 
+
+- ../autogen.sh
+- ./configure
+- make
+- sudo make install
+
+==== Linux
+
+Should "just work" if you have the following packages installed:
+
+- libusb-1.0-dev
+- freeglut3-dev (or whatever freeglut dev package your distro has)
+
+Since there's no udev rules yet, you'll need to run glview as
+root. Deal with it.
+
+==== OS X
+
+NOTE: AS OF 2010-11-16, WE HAVE UPDATED THIS PATCH. IF YOU HAVE
+ALREADY PATCHED, PLEASE REPATCH AND REINSTALL LIBUSB TO GET OS X
+WORKING AT FULL 30FPS.
+
+You will need to pull the libusb-1.0 repo head and patch using the
+files in platform/osx/. Just go to the root directory of the cloned
+libusb-1.0 repo and run
+
+patch -p1 < [path_to_OpenKinectRepo]/platform/osx/libusb-osx-kinect.diff
+
+
+Libfreenect is Copyright (C) 2010  Hector Martin "marcan" <hector@marcansoft.com>
+
+This code is licensed to you under the terms of the GNU GPL, version 2 or
+version 3; see:
+ http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
+ http://www.gnu.org/licenses/gpl-3.0.txt
+
+Credits:
+
+Adafruit, for providing the USB logs that I used to work out the initialization
+sequence and data format.
+
+bushing, for trying to provide USB logs, although he got preempted by Adafruit ;)
+
+A few other people who provided hints and encouragement along the way, you know
+who you are!
+
+
